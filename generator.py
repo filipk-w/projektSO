@@ -1,15 +1,20 @@
 import random, csv
+import numpy as np
+
 from typing import Dict, Any
 
-lista = []
 i = 10  #ilosc procesow do wygenerowania
+
+p = []
+at = []
+bt = []
 for i in range (0, i):
-    lista.append(dict(p=i, at=0, bt=0, wt=0))
-    lista[i]["bt"] = random.randint(1, 10)  # losowanie burst time
-    lista[i]["at"] = random.randint(1, 10)  # losowanie arrival time
+    p.append(i)
+    bt.append(np.random.randn(10))
+
 
 print(lista)
-with open('test.csv', 'w') as f:
+with open('test.csv', 'w') as f:    #zapisanie danych do pliku
     for i in lista:
         for key in i.keys():
             f.write("%s,%s\n"%(key,i[key]))
