@@ -7,10 +7,10 @@ at = []
 bt = []
 for a in range(0, i):
     p.append(a)
-    bt.append(np.random.randint(10))
+    bt.append(int(np.random.normal(loc=5,scale=2, size=1)))
     correct = False
     while not correct:
-        tempAt = np.random.randint(i)
+        tempAt = np.random.normal(loc=5,scale=1, size=1)))  #np.random.randint(i)
         if tempAt not in at:
             at.append(tempAt)
             correct = True
