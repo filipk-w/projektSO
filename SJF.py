@@ -9,17 +9,26 @@ timeStarted = 0
 timeFinished = 0
 
 def updateQueue():
-    temp = procesy[0]
-    for i in range(0, counter-1):               #szukanie nowego procesu do kolejki
-        if procesy[i][1] < temp[1]:
-            temp = procesy[i]
-        queue.append(procesy[i])
-        print(queue)
+    for i in range(0, len(procesy)-1):  # szukanie nowego procesu do kolejki
+        if procesy[i][2] == str(globalTimer):
+            queue.append(procesy[i])
+            del procesy[i]
+
 
 def initialize():
     global currentProcess
     if not len(queue) == 0:
         currentProcess = queue[0]
+
+def sortQueue():
+    if len(queue) >= 2:
+        l = len(queue)
+        for i in range(0, l):
+            for j in range(0, l - i - 1):
+                if (queue[j][1] > queue[j + 1][1]):
+                    temp = queue[j]
+                    queue[j] = queue[j + 1]
+                    queue[j + 1] = temp
 
 def processFinished():
     if currentProcess[1] == str(processTimer):  #sprawdzam czy zakonczony
@@ -63,12 +72,10 @@ globalTimer = 0
 del queue[0]
 del zakonczone[0]
 
+updateQueue()
+initialize()
 
 while True:                                   #główna pętla programu
-
-    updateQueue()
-    initialize()
-
     if quitProgram():
         with open('wynikiFCFS.csv', 'w') as f:  # zapisanie danych do pliku
             f.write("%s,%s,%s,%s,%s\n" % ('pNumber', "burstTime", "arrivalTime","waitingTime","endTime"))
@@ -77,13 +84,16 @@ while True:                                   #główna pętla programu
                     f.write("%s," % (zakonczone[i][j]))
                 f.write("\n")
         break
-
+    if globalTimer > 0 and len(procesy) != 0:
+        updateQueue()
+    sortQueue()
+    print(queue)
     if processFinished():
-        calculateData()                       #policz wt, end-time
-        zakonczone.append(currentProcess)     #dodaj do zakonczonych
-        if not len(queue) == 0:
-            currentProcess = queue[0]
-        processTimer = 0
-        print("Zakonczone: ", zakonczone)
+         calculateData()                       #policz wt, end-time
+         zakonczone.append(currentProcess)     #dodaj do zakonczonych
+         if not len(queue) == 0:
+             currentProcess = queue[0]
+         processTimer = 0
+         print("Zakonczone: ", zakonczone)
 
     updateTimers()
