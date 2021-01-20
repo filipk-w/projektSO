@@ -8,9 +8,10 @@ bt = []
 for a in range(0, i):
     p.append(a)
     bt.append(int(np.random.normal(loc=5,scale=2, size=1)))
+    #at.append(int(np.random.randint(i)))
     correct = False
     while not correct:
-        tempAt = np.random.normal(loc=5,scale=1, size=1)))  #np.random.randint(i)
+        tempAt = np.random.randint(i)
         if tempAt not in at:
             at.append(tempAt)
             correct = True

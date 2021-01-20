@@ -9,10 +9,12 @@ timeStarted = 0
 timeFinished = 0
 
 def updateQueue():
+    temp = procesy[0]
     for i in range(0, counter-1):               #szukanie nowego procesu do kolejki
-        if procesy[i][2] == str(globalTimer):
-            queue.append(procesy[i])
-            print(queue)
+        if procesy[i][1] < temp[1]:
+            temp = procesy[i]
+        queue.append(procesy[i])
+        print(queue)
 
 def initialize():
     global currentProcess
