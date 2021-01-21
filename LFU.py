@@ -1,33 +1,60 @@
 import numpy as np, csv
 
 capacity = 3
-referenceString =  np.random.randint(4, size=10)
+referenceString = np.random.randint(5, size=100)
 print(referenceString)
 memory = {}
 recentlyUsed = []
+toDelete = []
 globalTimer = 0
 pageFault = 0
 pageHit = 0
+usageCounter = 0
 
 for i in referenceString:
     if len(memory) < capacity:
         if i not in memory:
             memory[i] = 1
-            print(memory)
+            print("Fault!",memory)
             pageFault += 1
+            recentlyUsed.append(i)
+            print(recentlyUsed)
         else:
             memory[i] += 1
+            j = recentlyUsed.index(i)
+            del recentlyUsed[j]
+            recentlyUsed.append(i)
             print("Hit!", memory)
+
+            print(recentlyUsed)
             pageHit +=1
     elif len(memory) >= capacity:
         if i not in memory:
-            del memory[min(memory, key=lambda k: d[k])]
+            temp = min(memory.items(), key=lambda x: x[1])
+            for item in memory.items():
+                if item[1] == temp[1]:
+                    toDelete.append(recentlyUsed.index(item[0]))
+                    #print(toDelete)
+            if len(toDelete) > 1:
+                del memory[recentlyUsed[min(toDelete)]]
+                del recentlyUsed[min(toDelete)]
+
+            else:
+                del recentlyUsed[toDelete[0]]
+                del memory[recentlyUsed[toDelete[0]]]
+
+
             memory[i] = 1
-            print(memory)
+            recentlyUsed.append(i)
+            print(recentlyUsed)
+            print("Fault!",memory)
             pageFault += 1
         else:
+            j = recentlyUsed.index(i)
+            del recentlyUsed[j]
+            recentlyUsed.append(i)
             memory[i] += 1
             print("Hit!", memory)
             pageHit += 1
-
+            print(recentlyUsed)
 print("Hits:",pageHit,"Faults:",pageFault)
