@@ -21,6 +21,7 @@ for i in referenceString:
             pageHit +=1
     elif len(memory) >= capacity:
         if i not in memory:
+            del memory[min(memory, key=lambda k: d[k])]
             memory[i] = 1
             print(memory)
             pageFault += 1
