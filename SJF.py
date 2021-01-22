@@ -7,6 +7,7 @@ currentProcess = []
 processTimer = 0
 timeStarted = 0
 timeFinished = 0
+avgWT = 0
 
 def updateQueue():
     for i in range(0, len(procesy)-1):  # szukanie nowego procesu do kolejki
@@ -16,31 +17,36 @@ def updateQueue():
 
 
 def initialize():
-    global currentProcess
-    currentProcess = queue[0]
-    del queue[0]
+    global currentProcess, processTimer
+    if queue[0][2] == str(globalTimer):
+        processTimer = 0
+        currentProcess = queue[0]
+        del queue[0]
 
 
 def sortQueue():
+    global queue
     if len(queue) >= 2:
-        l = len(queue)
-        for i in range(0, l):
-            for j in range(0, l - i - 1):
-                if (queue[j][1] > queue[j + 1][1]):
-                    temp = queue[j]
-                    queue[j] = queue[j + 1]
-                    queue[j + 1] = temp
+        queue = sorted(queue, key=lambda x: (int(x[1])))
+        # l = len(queue)
+        # for i in range(0, l):
+        #     for j in range(0, l - i - 1):
+        #         if (queue[j][1] > queue[j + 1][1]):
+        #             temp = queue[j]
+        #             queue[j] = queue[j + 1]
+        #             queue[j + 1] = temp
 
 def processFinished():
-    if currentProcess[1] == str(processTimer):  #sprawdzam czy zakonczony
-        return True
-    else:
-        return False
+    if not len(currentProcess) == 0:
+        if currentProcess[1] == str(processTimer):
+            return True
+        else:
+            return False
 
 def calculateData():
-    waitingTime = globalTimer - processTimer
+    waitingTime = globalTimer - processTimer - int(currentProcess[2])
     currentProcess.append(str(waitingTime))
-    currentProcess.append(str(globalTimer))          #zapisanie czasu zakonczenia
+    currentProcess.append(str(globalTimer))
 
 def updateTimers():
     global processTimer, globalTimer, timeStarted, timeFinished
@@ -54,6 +60,13 @@ def quitProgram():
         return True
     else:
         return False
+
+def avgWaitingTime():
+    global avgWT
+    for n in zakonczone:
+        avgWT += int(n[3])
+    avgWT = avgWT/(counter-1)
+
 
 with open('test.csv', newline='') as plikDanych:
     reader = csv.reader(plikDanych, delimiter=',')
@@ -73,25 +86,34 @@ del queue[0]
 del zakonczone[0]
 
 updateQueue()
-initialize()
+if len(queue) >= 1:
+    initialize()
 
 while True:                                   #główna pętla programu
 
     if globalTimer > 0:
         updateQueue()
-        print(queue)
+        if len(currentProcess) == 0 and len(queue) >= 1:
+            initialize()
+
     sortQueue()
+    print(queue)
     if processFinished():
          calculateData()                       #policz wt, end-time
-         zakonczone.append(currentProcess)     #dodaj do zakonczonych
+         zakonczone.append(currentProcess)
+         #del queue[0]            #dodaj do zakonczonych
          if not len(queue) == 0:
              currentProcess = queue[0]
              del queue[0]
-             processTimer = 0
+         elif len(queue) == 0:
+             currentProcess = []
+         processTimer = 0
 
          print("Zakonczone: ", zakonczone)
-    if globalTimer>1 and processFinished() and quitProgram():
-        with open('wynikiSJF.csv', 'w') as f:  # zapisanie danych do pliku
+    if globalTimer > 1 and len(zakonczone) == counter-1 and quitProgram():
+        avgWaitingTime()
+        with open('wynikiSJF_30-5_1000.csv', 'w') as f:  # zapisanie danych do pliku
+            f.write("%s%s\n" % ("Sredni czas oczekiwania: ", str(avgWT)))
             f.write("%s,%s,%s,%s,%s\n" % ('pNumber', "burstTime", "arrivalTime","waitingTime","endTime"))
             for i in range(0, counter-1):
                 for j in range(0, 5):

@@ -1,7 +1,7 @@
 import numpy as np, csv
 
-capacity = 3
-referenceString =  np.random.randint(4, size=10)
+capacity = 7
+referenceString =  np.random.randint(20, size=1000)
 print(referenceString)
 memory = {}
 recentlyUsed = []

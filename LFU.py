@@ -1,7 +1,7 @@
 import numpy as np, csv
 
-capacity = 3
-referenceString = np.random.randint(5, size=100)
+capacity = 7
+referenceString = np.random.randint(20, size=1000)
 print(referenceString)
 memory = {}
 recentlyUsed = []
@@ -25,7 +25,6 @@ for i in referenceString:
             del recentlyUsed[j]
             recentlyUsed.append(i)
             print("Hit!", memory)
-
             print(recentlyUsed)
             pageHit +=1
     elif len(memory) >= capacity:
@@ -33,16 +32,19 @@ for i in referenceString:
             temp = min(memory.items(), key=lambda x: x[1])
             for item in memory.items():
                 if item[1] == temp[1]:
-                    toDelete.append(recentlyUsed.index(item[0]))
-                    #print(toDelete)
+                    toDelete.append(item)
             if len(toDelete) > 1:
-                del memory[recentlyUsed[min(toDelete)]]
-                del recentlyUsed[min(toDelete)]
+                toDelete = sorted(toDelete, key=lambda x: x[1])
+                del memory[toDelete[0][0]]
+                j = recentlyUsed.index(toDelete[0][0])
+                del recentlyUsed[j]
+                toDelete = []
 
             else:
-                del recentlyUsed[toDelete[0]]
-                del memory[recentlyUsed[toDelete[0]]]
-
+                j = recentlyUsed.index(toDelete[0][0])
+                del recentlyUsed[j]
+                del memory[toDelete[0][0]]
+                toDelete = []
 
             memory[i] = 1
             recentlyUsed.append(i)
